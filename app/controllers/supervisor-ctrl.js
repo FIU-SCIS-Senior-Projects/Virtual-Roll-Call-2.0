@@ -6,13 +6,14 @@ supervisorModule.controller('supervisorCtrl', ['$scope', 'localStorageService', 
   //get name from local storage for user profile customization
   var fname = localStorageService.get('fname');
   var lname = localStorageService.get('lname');
+  $scope.login = localStorageService.get('login');
   $scope.name = fname + ' ' + lname;
   $scope.password_pattern = '^[a-zA-Z0-9]{8,}$';
   $scope.pattern_descr = 'Must contain at least 8 or more characters. Only alphanumeric characters allowed.';
 
   /***** SHARED FUNCTIONS *****/
   var sharedCtrl = $controller('sharedCtrl', {$scope: $scope});
-
+  sharedCtrl.redirect($scope.login);
   $scope.getSiteNames = function(){
     sharedCtrl.getSiteNames();
   };
@@ -20,6 +21,10 @@ supervisorModule.controller('supervisorCtrl', ['$scope', 'localStorageService', 
   $scope.getOfficers = function(){
     sharedCtrl.getOfficers();
   };
+  
+  $scope.logout = function(){
+      sharedCtrl.logout();
+  }
 
   $scope.getCategories = function(){
     sharedCtrl.getCategories();

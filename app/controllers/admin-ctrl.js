@@ -5,15 +5,22 @@ adminModule.controller('adminCtrl', ['$scope', 'dataService', 'localStorageServi
 //get name from local storage for user profile customization
 var fname = localStorageService.get('fname');
 var lname = localStorageService.get('lname');
+$scope.login = localStorageService.get('login');
+
 $scope.name = fname + ' ' + lname;
 
 /***** SHARED FUNCTIONS *****/
 var sharedCtrl = $controller('sharedCtrl', {$scope: $scope});
+sharedCtrl.redirect($scope.login);
 
 /***** GET SITE NAME *****/
 $scope.getSiteNames = function(){
   sharedCtrl.getSiteNames();
 };
+
+$scope.logout = function(){
+      sharedCtrl.logout();
+  }
 
 /***** GET ALL OFFCIERS *****/
 $scope.getOfficers = function(){

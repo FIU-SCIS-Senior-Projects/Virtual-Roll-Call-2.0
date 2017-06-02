@@ -35,10 +35,13 @@ loginModule.controller('loginCtrl', ['$scope', 'localStorageService', 'dataServi
                //route to home page according to role
                if(data['Role'] === 'Administrator'){
                 $window.location.href = 'admin-profile.html';
+                localStorageService.set('login','administrator');
                }else if (data['Role'] === 'Supervisor'){
                 $window.location.href = 'supervisor-profile.html';
+                localStorageService.set('login','supervisor');
                }else{
                 $window.location.href = 'officer-profile.html';
+                localStorageService.set('login','officer');
                }
              }else{
                 //invalid credentials...notify user
@@ -51,4 +54,9 @@ loginModule.controller('loginCtrl', ['$scope', 'localStorageService', 'dataServi
             console.log('Error: ' + error);
           });          
   };
+  
+  $scope.logout = function (){
+      sharedCtrl.logout();
+  };
+  
 }]);

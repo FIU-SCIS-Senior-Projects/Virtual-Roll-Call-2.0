@@ -21,6 +21,19 @@ sharedModule.controller('sharedCtrl', ['$scope', 'sharedService', 'localStorageS
     }
   };
   
+  self.logout = function(){
+     localStorageService.set('login',''); 
+     localStorageService.set('id', "");
+     localStorageService.set('fname', "");
+     localStorageService.set('lname', "");
+     delete $scope.login;
+   };
+  
+  self.redirect = function(login){
+      if(login == "")
+          $window.location.href = 'index.html';
+  };
+  
   /***** GET APP NAME *****/
   self.getSiteNames = function(){
     sharedService.getSiteNames()

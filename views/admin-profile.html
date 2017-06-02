@@ -43,19 +43,19 @@
       <div class='collapse navbar-collapse' id='myNavbar'>
         <ul class='nav navbar-nav'>
           <li class='active'><a href='#'>Administrator</a></li>
-          <li><a href=''>Supervisor</a></li>
-          <li><a href=''>Officer</a></li>
+          <li><a target="_blank" href='supervisor-profile.html#/upload'>Supervisor</a></li>
+          <li><a  target="_blank" href='officer-profile.html#/categories'>Officer</a></li>
         </ul>
         <ul class='nav navbar-nav navbar-right'>
           <li class='dropdown'>
-            <a class='dropdown-toggle' data-toggle='dropdown'>{{name}} <b class='caret'></b></a>
+            <a class='dropdown-toggle' data-toggle='dropdown'>{{name}} {{login}} <b class='caret'></b></a>
             <ul class='dropdown-menu'>
               <li>
                 <a href='#password'><span class='glyphicon glyphicon-cog'></span> Change Password</a>
               </li>
               <li class='divider'></li>
               <li>
-                <a href='../app/php/logout.php'><span class='glyphicon glyphicon-log-out'></span> Log Out</a>
+                <a href='../app/php/logout.php' ng-click="logout()"><span class='glyphicon glyphicon-log-out'></span> Log Out</a>
               </li>
             </ul>
           </li>

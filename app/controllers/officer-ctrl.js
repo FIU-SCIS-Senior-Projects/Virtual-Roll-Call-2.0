@@ -4,14 +4,20 @@ officerModule.controller('officerCtrl', ['$scope', 'localStorageService', 'dataS
   //TO DO: SAVE AS GLOBALS OR IN SHAREDCTRL
   /***** GLOBALS *****/
   //get name from local storage for user profile customization
+  
+  
   var fname = localStorageService.get('fname');
   var lname = localStorageService.get('lname');
+  var id = localStorageService.get('id');
+  $scope.login = localStorageService.get('login');
   $scope.name = fname + ' ' + lname;
+  $scope.id = id;
   $scope.password_pattern = '^[a-zA-Z0-9]{8,}$';
   $scope.pattern_descr = 'Must contain at least 8 or more characters. Only alphanumeric characters allowed.';
 
   /***** SHARED FUNCTIONS *****/
   var sharedCtrl = $controller('sharedCtrl', {$scope: $scope});
+  sharedCtrl.redirect($scope.login);
 
   $scope.getSiteNames = function(){
     sharedCtrl.getSiteNames();
@@ -20,6 +26,14 @@ officerModule.controller('officerCtrl', ['$scope', 'localStorageService', 'dataS
   $scope.getCategories = function(){
     sharedCtrl.getCategories();
   };
+  
+  $scope.document_confirmation = function(){
+      console.log("Confirmation");
+  }
+ 
+  $scope.logout = function(){
+      sharedCtrl.logout();
+  }
 
   /***********************
  * GET PINNED DOCUMENTS *

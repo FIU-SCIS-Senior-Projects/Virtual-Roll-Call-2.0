@@ -55,7 +55,7 @@ officerModule.config(function($routeProvider){
 	.when('/categories', {
 		templateUrl: 'partials/view-categories.html',
 		controller: 'officerCtrl'
-	})
+    })
 	.when('/documents/:selectedCategory', {
 		templateUrl: 'partials/view-documents.html'
 	})
