@@ -348,4 +348,13 @@ class DBHandler{
 		return $result;
 	}
 
+	function documentSaveLog($user_id,$document_id){
+		global $db_connection;
+		$sql = "insert into LOGS(DOC,documentid,userid) values(now(),?,?) ";
+		$stmt = $db_connection->prepare($sql);
+		$stmt->bind_param('ii',$document_id,$user_id);
+		$stmt->execute();
+		
+	}	
+
 }

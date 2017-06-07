@@ -27,10 +27,6 @@ officerModule.controller('officerCtrl', ['$scope', 'localStorageService', 'dataS
     sharedCtrl.getCategories();
   };
   
-  $scope.document_confirmation = function(){
-      console.log("Confirmation");
-  }
- 
   $scope.logout = function(){
       sharedCtrl.logout();
   }
@@ -58,6 +54,7 @@ officerModule.controller('officerCtrl', ['$scope', 'localStorageService', 'dataS
 
       var tmp = new Object();
       tmp.name = data[x].name;
+      tmp.id = data[x].id;
       tmp.upload_name = data[x].upload_name;
       if(data[x].pinned == 1){
         pinned_documents.push(tmp);
@@ -77,6 +74,9 @@ officerModule.controller('officerCtrl', ['$scope', 'localStorageService', 'dataS
     console.log('Error: ' + error);
   });};
 
+   $scope.document_log = function(user_id,document_id){
+	dataService.documentSaveLog(user_id,document_id);
+  }
   /***** ALERT FUNCTIONS *****/
   //alert functions (displays accordingly in views)
   $scope.alert = sharedCtrl.alert;

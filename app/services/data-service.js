@@ -227,7 +227,7 @@ supervisorModule.factory('dataService', function($http, $q){
   }
 });
 
-//SERVICE for supervisor controller
+//SERVICE for officer controller
 officerModule.factory('dataService', function($http, $q){
   return {
     viewDocuments: function(){
@@ -254,6 +254,23 @@ officerModule.factory('dataService', function($http, $q){
             reject(error);
           });
       });
+    },
+
+documentSaveLog: function(user_id,document_id){
+      return $q(function(resolve, reject){
+       $http.post('../app/php/documentSaveLog.php',{'user_id':user_id,'document_id':document_id}) 
+        .then(
+          function(response){
+            resolve(response.data);
+          },
+          function(error){
+		console.log(error);
+            reject(error);
+          });
+      });
     }
   }
+
+
+
 });
