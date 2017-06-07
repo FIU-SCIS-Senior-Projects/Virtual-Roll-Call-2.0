@@ -49,6 +49,20 @@ sharedModule.factory('sharedService', function($http, $q){
           });
       });
     },
+    getlogs: function(){
+      return $q(function(resolve, reject){
+        $http.post('../app/php/get-logs.php', {})
+        .then(
+          function(response){
+		alert(response.data);
+            resolve(response.data);
+          },
+          function(error){
+            reject(error);
+          });
+      });
+    },
+
     changePassword: function(id, curr_pass, new_pass){
       return $q(function(resolve, reject){
         $http.post('../app/php/change-password.php', {'id': id, 'current': curr_pass, 'new': new_pass})

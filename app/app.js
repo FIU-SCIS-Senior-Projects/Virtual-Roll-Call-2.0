@@ -45,6 +45,10 @@ supervisorModule.config(function($routeProvider){
 		templateUrl: 'partials/change-password.html',
 		controller: 'sharedCtrl'
 	})
+	.when('/log',{
+                 templateUrl: 'partials/show-logs.html',
+                 controlller: 'supervisorCtrol'
+        })
 	.otherwise({
 		redirectTo: '/upload'
 	});

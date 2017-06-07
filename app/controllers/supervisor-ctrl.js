@@ -33,6 +33,9 @@ supervisorModule.controller('supervisorCtrl', ['$scope', 'localStorageService', 
   $scope.getDocuments = function(){
     sharedCtrl.getDocuments();
   }
+  $scope.getlogs = function(){
+  	sharedCtrl.getlogs();
+  }
   
   /***** ALERT FUNCTIONS *****/
   //alert functions (displays accordingly in views)

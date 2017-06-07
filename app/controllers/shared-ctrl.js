@@ -157,6 +157,34 @@ sharedModule.controller('sharedCtrl', ['$scope', 'sharedService', 'localStorageS
     console.log('Error: ' + error);
   });};
 
+       self.getlogs = function(){
+            sharedService.getlogs()
+            .then(
+              function(data){
+      //initialize an empty array to store results from the database
+      var logs = [];
+      //for each category in the result
+      for (var x in data){
+      //create an object and set object properties (i.e. documents data)
+      var tmp = new Object();
+      tmp.First_Name = data[x].First_Name;
+      tmp.Last_Name = data[x].Last_Name;
+      tmp.Document_Name = data[x].Document_Name;
+      tmp.DOC = data[x].DOC;
+      tmp.pinned = data[x].pinned;
+      tmp.uploadedBy = data[x].uploadedBy;
+      //store results in categories
+      logs.push(tmp);
+    }
+    //update value in view for use in ng-repeat (to populate)
+    $scope.logs = logs;
+  },
+  function(error){
+    console.log('Error: ' + error);
+  });};
+
+
+
             return self;
 
           }]);

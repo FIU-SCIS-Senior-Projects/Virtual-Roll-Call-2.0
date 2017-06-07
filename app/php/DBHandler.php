@@ -180,6 +180,25 @@ class DBHandler{
 		return $documents;
 	}
 
+        function getlogs(){
+                global $db_connection;
+                $logs = [];
+                $sql = 'select First_Name,Last_Name,Document_Name,DOC 
+from LOGS inner join DOCUMENTS on LOGS.documentid = DOCUMENTS.document_ID inner join OFFICERS on LOGS.userid = OFFICERS.userID';
+                $stmt = $db_connection->prepare($sql);
+                $stmt->execute();
+                $stmt->bind_result($First_Name, $Last_Name, $Document_Name, $DOC);
+                while($stmt->fetch()){
+                        $tmp = ["First_Name" => $First_Name,
+                        "Last_Name" => $Last_Name,
+                        "Document_Name" => $Document_Name,
+                        "DOC" => $DOC ];
+                        array_push($logs, $tmp);
+                }
+                $stmt->close();
+                $db_connection->close();
+                return $logs;
+        }
 
 	//ADD DOCUMENT METADATA  TO THE DATABASE
 	function addDocument($document, $category, $upload_date, $pinned, $uploaded_by, $upload_name){
