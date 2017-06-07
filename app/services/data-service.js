@@ -54,7 +54,6 @@ sharedModule.factory('sharedService', function($http, $q){
         $http.post('../app/php/get-logs.php', {})
         .then(
           function(response){
-		alert(response.data);
             resolve(response.data);
           },
           function(error){
