@@ -1,9 +1,10 @@
 <?php
 require_once('DBHandler.php');
 
-$document_name = $_FILES['document']['name'];
+$file = fopen("/tmp/log.txt", "w");
 $tmp_doc_name = $_FILES['document']['tmp_name'];
 $new_name = $_POST['document_name'];
+fwrite($file, $document_name);
 $doc_extension = pathinfo($document_name,PATHINFO_EXTENSION);
 $category_id = $_POST['category_id'];
 $uploaded_by = $_POST['uploaded_by'];
@@ -38,6 +39,7 @@ if(file_exists($target_path)){
 
 $connection = new DBHandler();
 
+fwrite($file, $new_name."\n".$category_id."\n".$upload_date."\n".$pinned."\n".$uploaded_by."\n".$document_name);
 $result = $connection->addDocument($new_name, $category_id, $upload_date, $pinned, $uploaded_by, $document_name);
 //convert the response to a json object
 die(json_encode($result));
