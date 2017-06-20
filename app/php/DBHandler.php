@@ -161,10 +161,25 @@ class DBHandler{
 	function getDocuments(){
 		global $db_connection;
 		$documents = [];
-		$sql = 'SELECT DOCUMENTS.document_ID, DOCUMENTS.Document_Name, DOCUMENTS.Category_ID, DOCUMENTS.Upload_Date, DOCUMENTS.Pinned, DOCUMENTS.Uploaded_By, CATEGORIES.category_name, DOCUMENTS.Upload_Name FROM DOCUMENTS INNER JOIN CATEGORIES ON DOCUMENTS.Category_ID = CATEGORIES.Category_ID';
+		$sql = 'SELECT 
+			DOCUMENTS.document_ID, 
+			DOCUMENTS.Document_Name, 
+			DOCUMENTS.Category_ID, 
+			DOCUMENTS.Upload_Date, 
+			DOCUMENTS.Pinned, 
+			DOCUMENTS.Uploaded_By, 
+			CATEGORIES.category_name, 
+			DOCUMENTS.Upload_Name, 
+			DOCUMENTS.Description,
+			DOCUMENT_STATUS.Description
+			FROM DOCUMENTS 
+			INNER JOIN CATEGORIES ON DOCUMENTS.Category_ID = CATEGORIES.Category_ID
+			LEFT JOIN USER_DOC_STATUS ON DOCUMENTS.document_ID = USER_DOC_STATUS.DocumentId
+			LEFT JOIN DOCUMENT_STATUS ON USER_DOC_STATUS.StatusId = DOCUMENT_STATUS.Id
+			';
 		$stmt = $db_connection->prepare($sql);
 		$stmt->execute();
-		$stmt->bind_result($id, $name, $catID, $date, $pinned, $uploadedBy, $cat_name, $upload_name);
+		$stmt->bind_result($id, $name, $catID, $date, $pinned, $uploadedBy, $cat_name, $upload_name, $doc_description, $status);
 		while($stmt->fetch()){
 			$tmp = ["id" => $id,
 			"name" => $name,
@@ -172,7 +187,10 @@ class DBHandler{
 			"date" => $date, 
 			"pinned" => $pinned, 
 			"uploadedBy" => $uploadedBy,
-			"upload_name" => $upload_name];
+			"upload_name" => $upload_name,
+			"doc_description" => $doc_description,
+			"status" => $status == NULL ? "Pending" : $status]
+			;
 			array_push($documents, $tmp);
 		}
 		$stmt->close();
