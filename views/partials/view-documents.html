@@ -1,50 +1,114 @@
 <div style="margin: auto; width: 75%">
 	<h3>{{selected_cat}}</h3>
 	<hr>
- 
+
 </div>
 
-<div style="margin: auto; width: 75%"> 
+<div style="margin: auto; width: 75%">
 	<div class='panel panel-primary' ng-init='viewDocuments()'>
 		<div class='panel-heading'>Pinned Documents</div>
 
-		<!-- TO DO: Overflow not detected until page reloads -->
-		<div class='panel-body' style="height:350px; overflow-y:scroll">
+		<div class='panel-body'>
 			<div class="row">
 				<div class="cat col-lg-4" ng-repeat='d in pinned_documents'>
-					<div style="margin: auto; width: 50%">
-						<a href='../app/php/download-document.php?upload_name={{d.upload_name}}'>
-							<img border="0" src="img/document_icon.png" alt="File Icon" width="100" height="140">			
-						</a>	
-						<div style="text-align: justify; width: 100">
-							<label>{{d.name}}</label><br><br>
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							{{d.name}}
+							<span class="badge badge-warning" style="background-color: #f0ad4e;">{{d.status}}</span>
+							<!--<h3 class="panel-title">Panel title</h3>-->
+						</div>
+						<div class="panel-body">
+
+							<div class="row">
+								<div class="col-md-3">
+									<a target="_blank" ng-click="document_log(id,d.id,'pinned')" href='../app/php/download-document.php?upload_name={{d.upload_name}}'>
+										<!-- <a href='../app/php/upload/{{d.upload_name}}'> -->
+										<!--<img border="0" src="img/document_icon.png" alt="File Icon" width="100" height="140">-->
+										<i class="fa fa-file-text fa-5x" style="color: #2780e3;"></i>
+										<br />
+										<br />
+									</a>
+								</div>
+								<div class="col-md-9">
+
+									<p>
+										{{d.doc_description}}
+									</p>
+
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-md-9">
+									<p style="font-size: small; color: #2780e3">
+										By click on "Done",  I acknowledge I have read and understand the content of this document.
+									</p>
+								</div>
+								<div class="col-md-3">
+									<button type="button" class="btn btn-success pull-right">Done</button>
+								</div>
+							</div>
+
 						</div>
 					</div>
-					
+
 				</div>
 			</div>
 		</div>
 	</div>
-	
+
 	<div class='panel panel-primary' ng-init='getPinnedDocuments()'>
 		<div class='panel-heading'>Unpinned Documents</div>
 
 		<!-- TO DO: Overflow not detected until page reloads -->
-		<div class='panel-body' style="height:350px; overflow-y:scroll">
+		<div class='panel-body'>
 			<div class="row">
 				<div class="cat col-lg-4" ng-repeat='d in unpinned_documents'>
-					<div style="margin: auto; width: 50%">
-						<a target="_blank" ng-click="document_log(id,d.id)" href='../app/php/download-document.php?upload_name={{d.upload_name}}'> 
-						 <!-- <a href='../app/php/upload/{{d.upload_name}}'> -->
-							<img border="0" src="img/document_icon.png" alt="File Icon" width="100" height="140">			
-						 </a>
-						 <!--
-						 <img ng-click='downloadDocument(d.upload_name)' border="0" src="../../views/img/document_icon.png" alt="File Icon" width="100" height="140">
-						 -->
-						<div style="text-align: justify; width: 100">
-							<label>{{d.name}}</label><br><br>
+
+
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							{{d.name}}
+							<span class="badge badge-warning" style="background-color: #f0ad4e;">{{d.status}}</span>
+							<!--<h3 class="panel-title">Panel title</h3>-->
+						</div>
+						<div class="panel-body">
+
+							<div class="row">
+								<div class="col-md-3">
+									<a target="_blank" ng-click="document_log(id,d.id,'unpinned')" href='../app/php/download-document.php?upload_name={{d.upload_name}}'>
+										<!-- <a href='../app/php/upload/{{d.upload_name}}'> -->
+										<!--<img border="0" src="img/document_icon.png" alt="File Icon" width="100" height="140">-->
+										<i class="fa fa-file-text fa-5x" style="color: #2780e3;"></i>
+										<br />
+										<br />
+									</a>
+								</div>
+								<div class="col-md-9">
+
+									<p>
+										{{d.doc_description}}
+									</p>
+
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-md-9">
+									<p style="font-size: small; color: #2780e3">
+										By click on "Done",  I acknowledge I have read and understand the content of this document.
+									</p>
+								</div>
+								<div class="col-md-3">
+									<button type="button" class="btn btn-success pull-right" ng-disabled="d.isDone">Done</button>
+								</div>
+							</div>
+
 						</div>
 					</div>
+					
 				</div>
 			</div>
 		</div>

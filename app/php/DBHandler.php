@@ -161,10 +161,25 @@ class DBHandler{
 	function getDocuments(){
 		global $db_connection;
 		$documents = [];
-		$sql = 'SELECT DOCUMENTS.document_ID, DOCUMENTS.Document_Name, DOCUMENTS.Category_ID, DOCUMENTS.Upload_Date, DOCUMENTS.Pinned, DOCUMENTS.Uploaded_By, CATEGORIES.category_name, DOCUMENTS.Upload_Name FROM DOCUMENTS INNER JOIN CATEGORIES ON DOCUMENTS.Category_ID = CATEGORIES.Category_ID';
+		$sql = 'SELECT 
+			DOCUMENTS.document_ID, 
+			DOCUMENTS.Document_Name, 
+			DOCUMENTS.Category_ID, 
+			DOCUMENTS.Upload_Date, 
+			DOCUMENTS.Pinned, 
+			DOCUMENTS.Uploaded_By, 
+			CATEGORIES.category_name, 
+			DOCUMENTS.Upload_Name, 
+			DOCUMENTS.Description,
+			DOCUMENT_STATUS.Description
+			FROM DOCUMENTS 
+			INNER JOIN CATEGORIES ON DOCUMENTS.Category_ID = CATEGORIES.Category_ID
+			LEFT JOIN USER_DOC_STATUS ON DOCUMENTS.document_ID = USER_DOC_STATUS.DocumentId
+			LEFT JOIN DOCUMENT_STATUS ON USER_DOC_STATUS.StatusId = DOCUMENT_STATUS.Id
+			';
 		$stmt = $db_connection->prepare($sql);
 		$stmt->execute();
-		$stmt->bind_result($id, $name, $catID, $date, $pinned, $uploadedBy, $cat_name, $upload_name);
+		$stmt->bind_result($id, $name, $catID, $date, $pinned, $uploadedBy, $cat_name, $upload_name, $doc_description, $status);
 		while($stmt->fetch()){
 			$tmp = ["id" => $id,
 			"name" => $name,
@@ -172,7 +187,10 @@ class DBHandler{
 			"date" => $date, 
 			"pinned" => $pinned, 
 			"uploadedBy" => $uploadedBy,
-			"upload_name" => $upload_name];
+			"upload_name" => $upload_name,
+			"doc_description" => $doc_description,
+			"status" => $status == NULL ? "Pending" : $status]
+			;
 			array_push($documents, $tmp);
 		}
 		$stmt->close();
@@ -375,5 +393,87 @@ from LOGS inner join DOCUMENTS on LOGS.documentid = DOCUMENTS.document_ID inner 
 		$stmt->execute();
 		
 	}	
+	
+	//UPDATE DOCUMENT STATUS
+	function documentStatusUpdate($user_id,$document_id,$new_status){
+
+		global $db_connection;
+		$insert = true;
+		$documents = [];
+
+		//reviewed = 1, done = 2
+		$new_status_id = $new_status == 'reviewed' ? 1 : 2;		
+
+		$sqlselect = "SELECT Id FROM USER_DOC_STATUS WHERE DocumentId=? AND OfficerId=?";
+		$stmselect = $db_connection->prepare($sqlselect);
+		$stmselect->bind_param('ii',$document_id,$user_id);
+		$stmselect->execute();
+
+		$stmselect->bind_result($id);
+		while($stmselect->fetch()){
+			$insert = false;
+		}
+
+		//document is read by first time, status will be set to reviewed and start date time will be set as well
+		if($insert){
+			$sql = "insert into USER_DOC_STATUS(StartDateTime,DocumentId,OfficerId,StatusId) values(now(),?,?,?) ";
+			$stmt = $db_connection->prepare($sql);
+			$stmt->bind_param('iii',$document_id,$user_id,$new_status_id);
+
+			if (!$stmt->execute()){
+				return "Error creating entry on USER_DOC_STATUS";//$result;
+			}
+			else{
+				$documents = [
+					"id" => $document_id,
+					"status" => "Reviewed"
+					];
+				return $documents;
+			}
+		}	
+		else{//document has been mark as done, status will be change to done and end date time will be set as well
+			
+		}	
+
+		return $documents;
+	}
+
+	// 	function updateDeptName($dept_name) {
+	// 	global $db_connection;
+	// 	$result = ["Updated" => false];
+	// 	$sql = "UPDATE SETTINGS SET Department_Name=?";
+	// 	$stmt = $db_connection->prepare($sql);
+	// 	if( !$stmt->bind_param('s', $dept_name)){
+	// 		return $result;
+	// 	}
+	// 	if (!$stmt->execute()){
+	// 		return $result;
+	// 	}
+	// 	$result["Updated"] = true;
+	// 	$stmt->close();
+	// 	$db_connection->close();
+	// 	return $result;
+	// }
+
+
+	// $stmt = $db_connection->prepare($sql);
+	// 	$stmt->execute();
+	// 	$stmt->bind_result($id, $name, $catID, $date, $pinned, $uploadedBy, $cat_name, $upload_name, $doc_description, $status);
+	// 	while($stmt->fetch()){
+	// 		$tmp = ["id" => $id,
+	// 		"name" => $name,
+	// 		"cat_name" => $cat_name,
+	// 		"date" => $date, 
+	// 		"pinned" => $pinned, 
+	// 		"uploadedBy" => $uploadedBy,
+	// 		"upload_name" => $upload_name,
+	// 		"doc_description" => $doc_description,
+	// 		"status" => $status == NULL ? "Pending" : $status]
+	// 		;
+	// 		array_push($documents, $tmp);
+	// 	}
+	// 	$stmt->close();
+	// 	$db_connection->close();
+	// 	return $documents;
 
 }
