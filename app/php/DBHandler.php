@@ -3,7 +3,6 @@
 //TO DO: Notify admin when a username already exists in the db
 
 class DBHandler{
-
 	//Must be updated to match production environment
 	function __construct(){
 		global $db_connection;
@@ -17,6 +16,47 @@ class DBHandler{
 			die('Unable to connect to database[' . $db_connection->connect_error . ']');
 		}
 
+	}
+
+	function GetStatusDescription($statusId){
+		global $db_connection;
+		$result = [];
+		$statusDescription = 'Not Defined';
+		
+		$sql = "SELECT Description FROM DOCUMENT_STATUS WHERE Id=?";
+		$stmt = $db_connection->prepare($sql);
+
+		if(!$stmt->bind_param('i',$statusId)){
+			return result;
+		}
+		if ($stmt->execute()){
+			$stmt->bind_result($statusDescription);
+			while($stmt->fetch()){
+				$statusDescription = $statusDescription;
+			};
+			$stmt->close();
+		}
+
+		return $statusDescription;
+	}
+	
+	function GetStatusArray(){
+		global $db_connection;
+		$result = [];
+		
+		$sql = "SELECT Id, Description FROM DOCUMENT_STATUS ORDER BY Id";
+		$stmt = $db_connection->prepare($sql);
+
+		if ($stmt->execute()){
+			$stmt->bind_result($id,$statusDescription);
+			array_push($result, "Not Defined");
+			while($stmt->fetch()){
+					array_push($result, $statusDescription);
+			}
+			$stmt->close();			
+		}
+		
+		return $result;
 	}
 
   //ADD NEW USER TO DATABASE
@@ -159,6 +199,9 @@ class DBHandler{
 
 	//GET ALL DOCUMENTS FROM THE DATABASE
 	function getDocuments(){
+
+		$statusArray = $this->GetStatusArray();
+
 		global $db_connection;
 		$documents = [];
 		$sql = 'SELECT 
@@ -189,7 +232,7 @@ class DBHandler{
 			"uploadedBy" => $uploadedBy,
 			"upload_name" => $upload_name,
 			"doc_description" => $doc_description,
-			"status" => $status == NULL ? "Pending" : $status]
+			"status" => $status == NULL ? $statusArray[1] : $status]
 			;
 			array_push($documents, $tmp);
 		}
@@ -399,10 +442,10 @@ from LOGS inner join DOCUMENTS on LOGS.documentid = DOCUMENTS.document_ID inner 
 
 		global $db_connection;
 		$insert = true;
-		$documents = [];
+		$result = [];
 
 		//reviewed = 1, done = 2
-		$new_status_id = $new_status == 'reviewed' ? 1 : 2;		
+		$new_status_id = $new_status == 'reviewed' ? 2 : 3;		
 
 		$sqlselect = "SELECT Id FROM USER_DOC_STATUS WHERE DocumentId=? AND OfficerId=?";
 		$stmselect = $db_connection->prepare($sqlselect);
@@ -421,21 +464,61 @@ from LOGS inner join DOCUMENTS on LOGS.documentid = DOCUMENTS.document_ID inner 
 			$stmt->bind_param('iii',$document_id,$user_id,$new_status_id);
 
 			if (!$stmt->execute()){
-				return "Error creating entry on USER_DOC_STATUS";//$result;
+				return "Error creating entry on USER_DOC_STATUS";
 			}
 			else{
-				$documents = [
+				$result = [
 					"id" => $document_id,
-					"status" => "Reviewed"
+					"status" => $this->GetStatusDescription(2),//status reviewed
 					];
-				return $documents;
+				$stmt->close();
+				$db_connection->close();
+				return $result;
 			}
 		}	
 		else{//document has been mark as done, status will be change to done and end date time will be set as well
+			//$EndDateTime = getdate();
+			$sql = "UPDATE USER_DOC_STATUS SET StatusId=?,EndDateTime=now() WHERE DocumentId=? AND OfficerId=?";
+			$stmt = $db_connection->prepare($sql);
+			if(!$stmt->bind_param('iii',$new_status_id,$document_id,$user_id)){
+				return result;
+			}
+			if(!$stmt->execute()){
+				return result;
+			}
+			else{
+
+				//$stmt->close();
+
+				$sql = 'SELECT
+				USER_DOC_STATUS.DocumentId, 
+				DOCUMENT_STATUS.Description 
+				FROM USER_DOC_STATUS
+				LEFT JOIN DOCUMENT_STATUS ON USER_DOC_STATUS.StatusId = DOCUMENT_STATUS.Id
+				WHERE DocumentId=? AND OfficerId=?
+				';
+				$stmtSelect = $db_connection->prepare($sql);
+				$stmtSelect->bind_param('ii',$document_id,$user_id);
+				if (!$stmtSelect->execute()){
+					return "Error updating entry on USER_DOC_STATUS";
+				}
+				else{
+					$stmtSelect->bind_result($document_id, $new_status_id);
+					while($stmtSelect->fetch()){
+						$result = [
+							"id" => $document_id,
+							"status" => $new_status_id
+							];
+					}
+					$stmtSelect->close();
+					$db_connection->close();
+					return $result;
+				}
+			}
 			
 		}	
 
-		return $documents;
+		return $result;
 	}
 
 	// 	function updateDeptName($dept_name) {
@@ -477,3 +560,47 @@ from LOGS inner join DOCUMENTS on LOGS.documentid = DOCUMENTS.document_ID inner 
 	// 	return $documents;
 
 }
+
+// class DBHandlerHelper{
+
+// 	//Must be updated to match production environment
+// 	function __construct(){
+// 		global $db_connection;
+// 		$un = 'root';
+// 		$pw = 'VirtualRollCall';
+// 		$dbName = 'VIRTUAL_ROLL_CALL';
+// 		$address = 'localhost';
+// 		$db_connection = new mysqli($address, $un, $pw, $dbName);
+
+// 		if ($db_connection->connect_errno > 0) {
+// 			die('Unable to connect to database[' . $db_connection->connect_error . ']');
+// 		}
+
+// 	}
+
+// 	function GetStatusDescription($statusId){
+// 		global $db_connection;
+// 		$result = [];
+// 		$statusDescription = 'Not Defined';
+		
+// 		$sql = 'SELECT Description FROM DOCUMENT_STATUS WHERE Id=?';
+// 		$stmt = $db_connection->prepare($sql);
+// 		$stmt->bind_param('d',$statusId);
+		
+// 		if ($stmt->execute()){
+// 			$stmt->bind_result($statusDescription);
+// 			while($stmt->fetch()){
+// 				$result = [
+// 					"description" => $statusDescription
+// 					];
+// 			}
+// 			$statusDescription = $result[0].description;
+// 			$stmt->close();
+// 			$db_connection->close();
+			
+// 		}
+
+// 		return $statusDescription;
+// 	}
+// }
+

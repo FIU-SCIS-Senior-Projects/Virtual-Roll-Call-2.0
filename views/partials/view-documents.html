@@ -42,11 +42,11 @@
 							<div class="row">
 								<div class="col-md-9">
 									<p style="font-size: small; color: #2780e3">
-										By click on "Done",  I acknowledge I have read and understand the content of this document.
+										By click on the check mark, I acknowledge I have read and understand the content of this document.
 									</p>
 								</div>
 								<div class="col-md-3">
-									<button type="button" class="btn btn-success pull-right">Done</button>
+									<input style="height: 30px;width: 30px;" type="checkbox" class="form-check-input pull-right" ng-model="d.isDone" ng-disabled="d.doneDisable" ng-click="documentStatusUpdate(id,d.id,'pinned','done')">
 								</div>
 							</div>
 
@@ -98,11 +98,11 @@
 							<div class="row">
 								<div class="col-md-9">
 									<p style="font-size: small; color: #2780e3">
-										By click on "Done",  I acknowledge I have read and understand the content of this document.
+										By click on the check mark, I acknowledge I have read and understand the content of this document.
 									</p>
 								</div>
 								<div class="col-md-3">
-									<button type="button" class="btn btn-success pull-right" ng-disabled="d.isDone">Done</button>
+									<input style="height: 30px;width: 30px;" type="checkbox" class="form-check-input pull-right" ng-model="d.isDone" ng-disabled="d.doneDisable" ng-click="documentStatusUpdate(id,d.id,'unpinned','done')">
 								</div>
 							</div>
 
