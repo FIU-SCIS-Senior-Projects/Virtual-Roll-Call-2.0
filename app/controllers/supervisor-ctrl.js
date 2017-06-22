@@ -105,4 +105,41 @@ supervisorModule.controller('supervisorCtrl', ['$scope', 'localStorageService', 
     $scope.orderBy = order; 
   };
 
+  // Listen event to set grid data after it is ready, event is triggered on sharedCtrl.getlogs()
+  $scope.$on('logs-data-ready', function(event, data) {
+    $scope.gridOptions.data = data;
+  });
+
+  $scope.gridOptions = {
+    enableFiltering: true,
+    columnDefs: [
+      { field: 'First_Name' },
+      { field: 'Last_Name'},
+      { field: 'Document_Name' },
+      { field: 'DOC' }
+    ],
+    enableGridMenu: true,
+    enableSelectAll: true,
+    exporterCsvFilename: 'Logs.csv',
+    exporterPdfDefaultStyle: {fontSize: 9},
+    exporterPdfTableStyle: {margin: [30, 30, 30, 30]},
+    exporterPdfTableHeaderStyle: {fontSize: 10, bold: true, italics: true, color: 'red'},
+    exporterPdfHeader: { text: "Logs Report", style: 'headerStyle' },
+    exporterPdfFooter: function ( currentPage, pageCount ) {
+      return { text: currentPage.toString() + ' of ' + pageCount.toString(), style: 'footerStyle' };
+    },
+    exporterPdfCustomFormatter: function ( docDefinition ) {
+      docDefinition.styles.headerStyle = { fontSize: 22, bold: true };
+      docDefinition.styles.footerStyle = { fontSize: 10, bold: true };
+      return docDefinition;
+    },
+    exporterPdfOrientation: 'landscape',
+    exporterPdfPageSize: 'LETTER',
+    exporterPdfMaxGridWidth: 500,
+    exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+    onRegisterApi: function(gridApi){
+      $scope.gridApi = gridApi;
+    }
+  };
+
 }]);

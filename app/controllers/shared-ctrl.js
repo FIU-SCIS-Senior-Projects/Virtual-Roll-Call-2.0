@@ -158,6 +158,7 @@ sharedModule.controller('sharedCtrl', ['$scope', 'sharedService', 'localStorageS
   });};
 
        self.getlogs = function(){
+
             sharedService.getlogs()
             .then(
               function(data){
@@ -178,6 +179,9 @@ sharedModule.controller('sharedCtrl', ['$scope', 'sharedService', 'localStorageS
     }
     //update value in view for use in ng-repeat (to populate)
     $scope.logs = logs;
+
+    //broadcast event to fill grid data
+    $scope.$broadcast('logs-data-ready', $scope.logs);
   },
   function(error){
     console.log('Error: ' + error);
