@@ -81,14 +81,16 @@ officerModule.controller('officerCtrl', ['$scope', 'localStorageService', 'dataS
 
     };
 
-    $scope.document_log = function (user_id, document_id, list_name) {
+    $scope.document_log = function (user_id, document_id, list_name, status) {
       dataService.documentSaveLog(user_id, document_id);
-      $scope.documentStatusUpdate(user_id, document_id, list_name, 'reviewed');
+
+      if(status == 'Pending')
+        $scope.documentStatusUpdate(user_id, document_id, list_name, status);
     }
 
-    $scope.documentStatusUpdate = function (user_id, document_id, list_name, new_status) {
+    $scope.documentStatusUpdate = function (user_id, document_id, list_name, status) {
       var updatedDoc;
-      dataService.documentStatusUpdate(user_id, document_id, new_status)
+      dataService.documentStatusUpdate(user_id, document_id, status)
         .then(
         function (data) {
           console.log('Data: Id:' + data.id + ' Status:' + data.status);

@@ -444,8 +444,12 @@ from LOGS inner join DOCUMENTS on LOGS.documentid = DOCUMENTS.document_ID inner 
 		$insert = true;
 		$result = [];
 
-		//reviewed = 1, done = 2
-		$new_status_id = $new_status == 'reviewed' ? 2 : 3;		
+		$new_status_id;
+
+		if($new_status == 'Pending')
+			$new_status_id = 2;
+		else if($new_status == 'Reviewed')
+			$new_status_id = 3;
 
 		$sqlselect = "SELECT Id FROM USER_DOC_STATUS WHERE DocumentId=? AND OfficerId=?";
 		$stmselect = $db_connection->prepare($sqlselect);
