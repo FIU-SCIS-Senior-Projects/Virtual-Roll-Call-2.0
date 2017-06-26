@@ -26,7 +26,7 @@ echo  $_FILES['document']['error'];
 if (move_uploaded_file($tmp_doc_name, $target_path)){
 echo " This should mean that the file was upload ";
 }else{
-echo "This will mean that the file could not be able to move to the place ";
+echo "This will mean that the file could not be able to move to the place ---------- ";
 }
 
 

@@ -37,6 +37,10 @@ supervisorModule.controller('supervisorCtrl', ['$scope', 'localStorageService', 
   	sharedCtrl.getlogs();
   }
   
+   $scope.refresh = function(){
+       setTimeout(function(){ window.location.reload(); }, 3000);
+  }
+  
   /***** ALERT FUNCTIONS *****/
   //alert functions (displays accordingly in views)
   $scope.alert = sharedCtrl.alert;
