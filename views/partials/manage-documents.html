@@ -73,13 +73,51 @@
 							<td>{{d.date}}</td>
 							<td>{{d.pinned}}</td>
 							<td>{{d.uploadedBy}}</td>
-							<td class='text-center'><button class="btn-default"><span class="glyphicon glyphicon-edit"></span> Edit</button></td>
+							<td class='text-center'><button class="btn-default" ng-click="editDocument(d.id,d.name,d.pinned,d.cat_name)"><span class="glyphicon glyphicon-edit"></span> Edit</button></td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
 		</div>
 	</div>	
-	
+	<div class="modal fade" id="editModal" role="dialog">
+		<div class="modal-dialog">
+			
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header" style="padding:15px 15px;">
+					<button type="button" class="close" data-dismiss="modal" ng-click='updateErrorMessage = updateSuccessMessage = false'>&times;</button>
+					<h4><span class="glyphicon glyphicon-pencil"></span> Edit Document</h4>
+				</div>
+				<div class="modal-body" style="padding:40px 50px;">
+					<br>
+					<form role="form" ng-submit=''>
+						<div class="form-group">
+							<label>Document Name</label>
+							<input type="text" class="form-control" ng-model='doc_name' required>
+						</div>
+						<div class="form-group" ng-init='getCategories()'>
+							<label>Categories</label>
+<!--                            <select class="form-control" name="category_id" 
+                                    ng-options='category as category.name for category in categories track by category.id' ng-model='doc_cat_name'>
+					</select>-->
+                            <select class="form-control" name="category_id" 
+                                    ng-options='category as category.name for category in categories track by category.name' ng-model='doc_cat_name'>
+					</select>
+						</div>
+						<div class="form-group">
+							<label>Pinned</label>
+							<input type="checkbox" class="form-control"  ng-model='doc_pinned' required>
+						</div>
+						
+						<br>
+						<!-- TO DO: Don't show successful update message when no changes were made to the user -->
+						<button type="submit" class="btn btn-success btn-block">Update</button>
+						<br>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div> 
 	<iframe width="0" height="0" border="0" name="dummyframe" id="dummyframe" style="display:none"</iframe>
 </div>

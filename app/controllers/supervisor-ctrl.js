@@ -41,6 +41,26 @@ supervisorModule.controller('supervisorCtrl', ['$scope', 'localStorageService', 
        setTimeout(function(){ window.location.reload(); }, 3000);
   }
   
+  $scope.editDocument = function(id,name,pinned,category){
+  
+  if(pinned == 1 )
+      pinned = true;
+  else
+      pinned = false;
+  
+    $scope.doc_id = id; 
+    $scope.doc_name = name;
+    $scope.doc_cat_name = category;
+    $scope.doc_pinned = pinned; 
+    $('#editModal').modal();
+  };
+  
+  $scope.updateDocument = function(){
+  var id = $scope.doc_id;
+  
+  dataService.updateDocument(id, categorie, name, pinned)
+  }
+  
   /***** ALERT FUNCTIONS *****/
   //alert functions (displays accordingly in views)
   $scope.alert = sharedCtrl.alert;
