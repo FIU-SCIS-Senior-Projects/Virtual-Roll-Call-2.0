@@ -157,6 +157,22 @@ sharedModule.controller('sharedCtrl', ['$scope', 'sharedService', 'localStorageS
     console.log('Error: ' + error);
   });};
 
+  self.updateDocument = function(id,categorie,name,pinned){
+      sharedService.updateDocument(id,categorie,name,pinned)
+      .then(
+              function(data){
+                 if(data){
+		   //$('#editModal').modal('hide');
+			window.location.reload();	
+		}
+              },
+              function(error){
+                console.log(error);
+              });
+   };
+
+
+
        self.getlogs = function(){
 
             sharedService.getlogs()
@@ -186,9 +202,8 @@ sharedModule.controller('sharedCtrl', ['$scope', 'sharedService', 'localStorageS
   function(error){
     console.log('Error: ' + error);
   });};
-
-
-
             return self;
 
           }]);
+
+

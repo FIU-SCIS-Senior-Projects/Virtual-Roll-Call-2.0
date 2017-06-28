@@ -42,7 +42,12 @@ supervisorModule.controller('supervisorCtrl', ['$scope', 'localStorageService', 
   }
   
   $scope.editDocument = function(id,name,pinned,category){
-  
+ 
+  $scope.categories.forEach(function(element){
+    if(element.name == category)
+	category = element;
+  });
+ 
   if(pinned == 1 )
       pinned = true;
   else
@@ -56,11 +61,13 @@ supervisorModule.controller('supervisorCtrl', ['$scope', 'localStorageService', 
   };
   
   $scope.updateDocument = function(){
-  var id = $scope.doc_id;
-  
-  dataService.updateDocument(id, categorie, name, pinned)
-  }
-  
+  	var id = $scope.doc_id;
+     	var categorie =  $scope.doc_cat_name;
+     	var name = $scope.doc_name;
+	var pinned = $scope.doc_pinned;
+     sharedCtrl.updateDocument(id, categorie, name, pinned)
+ 
+} 
   /***** ALERT FUNCTIONS *****/
   //alert functions (displays accordingly in views)
   $scope.alert = sharedCtrl.alert;

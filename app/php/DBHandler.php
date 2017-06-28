@@ -436,6 +436,21 @@ from LOGS inner join DOCUMENTS on LOGS.documentid = DOCUMENTS.document_ID inner 
 		$stmt->execute();
 		
 	}	
+
+        function updateDocument($id,$name,$categories,$pinned){
+                global $db_connection;
+                $sql = "Update DOCUMENTS set Document_Name=?,Category_ID=?,Pinned=? where document_ID =?";
+                $rs = $db_connection->prepare($sql);
+                if(!$rs->bind_param('siii',$name,$categories,$pinned,$id))
+                        return "Bind paramenter error";
+
+                if(!$rs->execute()){
+                       return "Execute Error";
+                }
+                $rs->close();
+                $db_connection->close();
+                return true;
+        }
 	
 	//UPDATE DOCUMENT STATUS
 	function documentStatusUpdate($user_id,$document_id,$new_status){

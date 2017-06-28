@@ -62,7 +62,17 @@ sharedModule.factory('sharedService', function ($http, $q) {
       });
     },
 
-    changePassword: function (id, curr_pass, new_pass) {
+   
+   updateDocument: function(id,categorie,name,pinned){
+     return $q(function (resolve, reject){
+   	$http.post('../app/php/update-document.php',{'id':id,'categories':categorie,'name':name,'pinned':pinned})
+	 .then(
+		function (response){ resolve(response.data);},
+		function (error) {reject(error);})
+	});
+  },
+ 
+   changePassword: function (id, curr_pass, new_pass) {
       return $q(function (resolve, reject) {
         $http.post('../app/php/change-password.php', { 'id': id, 'current': curr_pass, 'new': new_pass })
           .then(
