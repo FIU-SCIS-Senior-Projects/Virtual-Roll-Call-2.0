@@ -140,7 +140,7 @@ class DBHandler{
 		global $db_connection;
         //store the result here
 		$result = ['userID' => NULL, 'First_Name' => NULL, 'Last_Name' => NULL, 'Username' => NULL, 'Password' => NULL, 'Role' => NULL];
-		$sql = 'SELECT userID, First_Name, Last_Name, Username, Password, Role FROM OFFICERS WHERE Username=? AND Password=?';
+		$sql = 'SELECT userID, First_Name, Last_Name, Username, Password, Role FROM OFFICERS WHERE Username=? AND Password=? and Active = 1';
 		$stmt = $db_connection->prepare($sql);
 		$stmt->bind_param('ss', $username, $password);
 		$stmt->execute();
