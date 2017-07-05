@@ -33,9 +33,9 @@ officerModule.controller('officerCtrl', ['$scope', 'localStorageService', 'dataS
     }
 
     /***********************
-   * GET PINNED DOCUMENTS *
+   * GET ACTIVE DOCUMENTS *
    ***********************/
-    $scope.viewDocuments = function () {
+    $scope.getActiveDocuments = function () {
 
       $scope.selected_cat = $routeParams.selectedCategory;
 
@@ -81,10 +81,58 @@ officerModule.controller('officerCtrl', ['$scope', 'localStorageService', 'dataS
 
     };
 
+
+    /***********************
+   * GET ARCHIVED DOCUMENTS *
+   ***********************/
+
+    $scope.getArchivedDocuments = function () {
+
+      $scope.selected_cat = $routeParams.selectedCategory;
+
+      dataService.viewArchivedDocuments()
+        .then(
+        function (data) {
+          var cat = $routeParams.selectedCategory;
+
+          //initialize an empty array to store results from the database
+          var pinned_documents = [];
+          var unpinned_documents = [];
+
+          //for each category in the result
+          for (var x in data) {
+            //create an object and set object properties (i.e. documents data)
+            if (cat === data[x].cat_name) {
+
+              var tmp = new Object();
+              tmp.name = data[x].name;
+              tmp.id = data[x].id;
+              tmp.upload_name = data[x].upload_name;
+              tmp.doc_description = data[x].doc_description;
+              tmp.status = data[x].status;
+              tmp.isDone = data[x].status == "Done" ? true : false;
+              tmp.doneDisable = data[x].status == "Pending" || data[x].status == "Done" ? true : false;
+
+              unpinned_documents.push(tmp);//archive will always be unpinned
+
+            }
+          }
+
+          //update value in view for use in ng-repeat (to populate)
+          $scope.pinned_documents = pinned_documents;
+          $scope.unpinned_documents = unpinned_documents;
+
+        },
+        function (error) {
+          console.log('Error: ' + error);
+        });
+
+    };
+
     $scope.document_log = function (user_id, document_id, list_name, status) {
       dataService.documentSaveLog(user_id, document_id);
 
-      if(status == 'Pending')
+      if (status == 'Pending')
         $scope.documentStatusUpdate(user_id, document_id, list_name, status);
     }
 

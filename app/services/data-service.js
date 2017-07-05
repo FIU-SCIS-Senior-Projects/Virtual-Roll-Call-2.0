@@ -266,6 +266,19 @@ officerModule.factory('dataService', function ($http, $q) {
       });
     },
 
+    viewArchivedDocuments: function () {
+      return $q(function (resolve, reject) {
+        $http.post('../app/php/get-documents.php', {})
+          .then(
+          function (response) {
+            resolve(response.data);
+          },
+          function (error) {
+            reject(error);
+          });
+      });
+    },
+
     downloadDocument: function (upload_name) {
       return $q(function (resolve, reject) {
         $http.post('../app/php/view-document.php', { 'upload_name': upload_name })
