@@ -26,6 +26,10 @@ adminModule.config(function($routeProvider){
 		templateUrl: 'partials/reporting.html',
 		controller: 'adminCtrl'
 	})
+	.when('/archive',{
+		templateUrl: 'partials/archive.html',
+		controller: 'adminCtrl'
+	})
 	.otherwise({
 		redirectTo: '/user-management'
 	});
