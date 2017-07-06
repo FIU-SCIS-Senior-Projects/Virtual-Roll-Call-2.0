@@ -19,6 +19,9 @@
 					<input type="text" name='document_name' required>
 					<br>
 					<br>
+					<input type="text" name='document_description' required>
+					<br>
+					<br>
 					<label>Category <span class="glyphicon glyphicon-list-alt"></span></label>
 					<br>
 					<select name="category_id" value='{{category.id}}' ng-options='category as category.name for category in categories track by category.id' ng-model='selected_category'>

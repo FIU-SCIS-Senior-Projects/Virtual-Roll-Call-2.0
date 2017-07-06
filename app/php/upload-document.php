@@ -2,6 +2,7 @@
 require_once('DBHandler.php');
 
 $document_name = $_FILES['document']['name'];
+$document_description = $_FILES['document']['description'];
 $tmp_doc_name = $_FILES['document']['tmp_name'];
 $new_name = $_POST['document_name'];
 $doc_extension = pathinfo($document_name,PATHINFO_EXTENSION);

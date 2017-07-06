@@ -96,7 +96,6 @@ officerModule.controller('officerCtrl', ['$scope', 'localStorageService', 'dataS
           var cat = $routeParams.selectedCategory;
 
           //initialize an empty array to store results from the database
-          var pinned_documents = [];
           var unpinned_documents = [];
 
           //for each category in the result
@@ -113,13 +112,12 @@ officerModule.controller('officerCtrl', ['$scope', 'localStorageService', 'dataS
               tmp.isDone = data[x].status == "Done" ? true : false;
               tmp.doneDisable = data[x].status == "Pending" || data[x].status == "Done" ? true : false;
 
-              unpinned_documents.push(tmp);//archive will always be unpinned
+              unpinned_documents.push(tmp); //archive will always be unpinned
 
             }
           }
 
           //update value in view for use in ng-repeat (to populate)
-          $scope.pinned_documents = pinned_documents;
           $scope.unpinned_documents = unpinned_documents;
 
         },
