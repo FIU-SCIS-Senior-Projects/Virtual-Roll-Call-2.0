@@ -1,4 +1,39 @@
 //CONTROLLER for admin app
+adminModule.directive('mydatepicker', function () {
+return {
+    restrict: 'A',
+    require: 'ngModel',
+    
+     link: function ($scope, element, attrs, adminCtrl) {
+        element.datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (from) {
+                $scope.from = from;
+                $scope.$apply();
+            }
+        });
+    },
+      
+    
+  };
+});
+adminModule.directive('mydatepickerto', function () {
+return {
+    restrict: 'A',
+    require: 'ngModel',
+     link: function ($scope, element, attrs, adminCtrl) {
+        element.datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (to) {
+                $scope.to = to;
+                $scope.$apply();
+            }
+        });
+    }
+  };
+});
+
+
 adminModule.controller('adminCtrl', ['$scope', 'dataService', 'localStorageService', '$window', '$controller', '$location', function($scope, dataService, localStorageService, $window, $controller, $location){
 
 /***** GLOBALS *****/
@@ -9,6 +44,7 @@ $scope.login = localStorageService.get('login');
 
 $scope.name = fname + ' ' + lname;
 
+
 /***** SHARED FUNCTIONS *****/
 var sharedCtrl = $controller('sharedCtrl', {$scope: $scope});
 sharedCtrl.redirect($scope.login);
@@ -17,6 +53,13 @@ sharedCtrl.redirect($scope.login);
 $scope.getSiteNames = function(){
   sharedCtrl.getSiteNames();
 };
+
+$scope.deleteArchive = function (){
+    dataService.deleteArchive($scope.from,$scope.to)
+    .then(function(data){
+        $scope.files_deleted = data;
+    })
+}
 
 $scope.logout = function(){
       sharedCtrl.logout();

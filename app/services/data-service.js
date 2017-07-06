@@ -204,8 +204,21 @@ adminModule.factory('dataService', function ($http, $q) {
 
     updateAppName: function (name) {
       return $q(function (resolve, reject) {
-        console.log(name);
+        
         $http.post('../app/php/update-app-name.php', { 'name': name })
+          .then(
+          function (response) {
+            resolve(response.data);
+          },
+          function (error) {
+            reject(error);
+          });
+      });
+    },
+    deleteArchive: function(from,to) {
+      return $q(function (resolve, reject) {
+        
+        $http.post('../app/php/delete-archive.php', { 'from': from,'to':to })
           .then(
           function (response) {
             resolve(response.data);

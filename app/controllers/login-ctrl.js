@@ -7,6 +7,8 @@ loginModule.controller('loginCtrl', ['$scope', 'localStorageService', 'dataServi
   /***** ALERT FUNCTIONS *****/
   //alert functions (displays accordingly in views)
   $scope.alert = sharedCtrl.alert;
+  $scope.login_count = Array();
+  $scope.login_count.push(0);
 
   $scope.getSiteNames = function(){
     sharedCtrl.getSiteNames();
@@ -18,7 +20,8 @@ loginModule.controller('loginCtrl', ['$scope', 'localStorageService', 'dataServi
       //get values from the login input fields
       var username = $scope.username;
       var password = $scope.password;
-
+      
+      var count = $scope.login_count[$scope.login_count.length-1];
       //authenticate user
       dataService.login(username, password)
       .then(
@@ -45,8 +48,10 @@ loginModule.controller('loginCtrl', ['$scope', 'localStorageService', 'dataServi
                }
              }else{
                 //invalid credentials...notify user
+                count = count +1;
+                 $scope.login_count.push(count);
                 $scope.alert.closeAll();
-                $scope.alert.addAlert('danger', "Invalid credentials. Please try again.");
+                $scope.alert.addAlert('danger', "Invalid credentials. Please try again. " + username + $scope.login_count[$scope.login_count.length-1]);
               }
             },
           //http post request failed
