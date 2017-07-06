@@ -67,6 +67,9 @@ officerModule.config(function($routeProvider){
 	.when('/documents/:selectedCategory', {
 		templateUrl: 'partials/view-documents.html'
 	})
+	.when('/documents/:selectedCategory/archived', {
+		templateUrl: 'partials/view-documents-archived.html'
+	})
 	.otherwise({
 		redirectTo: '/categories'
 	});

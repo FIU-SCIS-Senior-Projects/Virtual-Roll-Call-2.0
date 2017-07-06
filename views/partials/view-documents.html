@@ -4,8 +4,8 @@
 
 </div>
 
-<div style="margin: auto; width: 75%">
-	<div class='panel panel-primary' ng-init='viewDocuments()'>
+<div style="margin: auto; width: 75%" ng-init='getActiveDocuments()'>
+	<div class='panel panel-primary'>
 		<div class='panel-heading'>Pinned Documents</div>
 
 		<div class='panel-body'>
@@ -58,7 +58,7 @@
 		</div>
 	</div>
 
-	<div class='panel panel-primary' ng-init='getPinnedDocuments()'>
+	<div class='panel panel-primary'>
 		<div class='panel-heading'>Unpinned Documents</div>
 
 		<!-- TO DO: Overflow not detected until page reloads -->

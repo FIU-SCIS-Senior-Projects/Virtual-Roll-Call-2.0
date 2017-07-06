@@ -7,7 +7,7 @@
   }   
 
   a, a:hover{
-    color: #FFFFFF;
+    /*color: #FFFFFF;*/
     text-decoration: none;
   }
 
@@ -39,6 +39,11 @@
     color: #FFFFFF;
     font-size: 1.5em;
     background-color: #0d67c1;
+  }
+
+  .archive-link{
+    color: orange;
+    margin-left: 16px;
   }
 
 /* ---------------------------------------------------------

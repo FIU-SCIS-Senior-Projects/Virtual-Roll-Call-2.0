@@ -4,6 +4,7 @@ require_once('DBHandler.php');
 $document_name = $_FILES['document']['name'];
 $tmp_doc_name = $_FILES['document']['tmp_name'];
 $new_name = $_POST['document_name'];
+$document_description = $_POST['document_description'];
 $doc_extension = pathinfo($document_name,PATHINFO_EXTENSION);
 $category_id = $_POST['category_id'];
 $uploaded_by = $_POST['uploaded_by'];
@@ -38,7 +39,7 @@ if(file_exists($target_path)){
 
 $connection = new DBHandler();
 
-$result = $connection->addDocument($new_name, $category_id, $upload_date, $pinned, $uploaded_by, $document_name);
+$result = $connection->addDocument($new_name, $category_id, $upload_date, $pinned, $uploaded_by, $document_name, $document_description);
 //convert the response to a json object
 die(json_encode($result));
 //!!!!!IMPORTANT CHANGE TO RELEVANT URL !!!!!!

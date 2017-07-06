@@ -198,7 +198,7 @@ class DBHandler{
 	}
 
 	//GET ALL DOCUMENTS FROM THE DATABASE
-	function getDocuments(){
+	function getDocuments($archived){
 
 		$statusArray = $this->GetStatusArray();
 
@@ -220,6 +220,14 @@ class DBHandler{
 			LEFT JOIN USER_DOC_STATUS ON DOCUMENTS.document_ID = USER_DOC_STATUS.DocumentId
 			LEFT JOIN DOCUMENT_STATUS ON USER_DOC_STATUS.StatusId = DOCUMENT_STATUS.Id
 			';
+
+		if($archived == true){
+		 	$sql .= ' WHERE DOCUMENTS.Upload_Date < (DATE(NOW()) - INTERVAL 7 DAY) AND DOCUMENTS.Pinned = false';
+		}
+		else{
+			$sql .= ' WHERE DOCUMENTS.Upload_Date >= (DATE(NOW()) - INTERVAL 7 DAY) OR DOCUMENTS.Pinned = true';
+		}	
+
 		$stmt = $db_connection->prepare($sql);
 		$stmt->execute();
 		$stmt->bind_result($id, $name, $catID, $date, $pinned, $uploadedBy, $cat_name, $upload_name, $doc_description, $status);
@@ -260,15 +268,16 @@ from LOGS inner join DOCUMENTS on LOGS.documentid = DOCUMENTS.document_ID inner 
                 $db_connection->close();
                 return $logs;
         }
-
+	
+	//TODO: UPLOAD DATE COME WITH 1 DAY MORE THAN THE ACTUAL DATE
 	//ADD DOCUMENT METADATA  TO THE DATABASE
-	function addDocument($document, $category, $upload_date, $pinned, $uploaded_by, $upload_name){
+	function addDocument($document, $category, $upload_date, $pinned, $uploaded_by, $upload_name, $upload_description){
 		global $db_connection;
 		$result = ['Added' => false];
-		$sql = "INSERT INTO DOCUMENTS (Document_Name, Category_ID, Upload_Date, Pinned, Uploaded_By, Upload_Name) VALUES (?,?,?,?,?,?)"; 
+		$sql = "INSERT INTO DOCUMENTS (Document_Name, Category_ID, Upload_Date, Pinned, Uploaded_By, Upload_Name, Description) VALUES (?,?,?,?,?,?,?)"; 
 		$stmt = $db_connection->prepare($sql);
 		
-		if (!$stmt->bind_param('sdsdss', $document, $category, $upload_date, $pinned, $uploaded_by, $upload_name))
+		if (!$stmt->bind_param('sdsdsss', $document, $category, $upload_date, $pinned, $uploaded_by, $upload_name, $upload_description))
 		{
 			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
 		}

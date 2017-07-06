@@ -268,7 +268,20 @@ officerModule.factory('dataService', function ($http, $q) {
   return {
     viewDocuments: function () {
       return $q(function (resolve, reject) {
-        $http.post('../app/php/get-documents.php', {})
+        $http.post('../app/php/get-documents.php', {'archived': false})
+          .then(
+          function (response) {
+            resolve(response.data);
+          },
+          function (error) {
+            reject(error);
+          });
+      });
+    },
+
+    viewArchivedDocuments: function () {
+      return $q(function (resolve, reject) {
+        $http.post('../app/php/get-documents.php', {'archived': true})
           .then(
           function (response) {
             resolve(response.data);
