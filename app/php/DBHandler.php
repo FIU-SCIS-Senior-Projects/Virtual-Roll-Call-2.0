@@ -517,8 +517,7 @@ class DBHandler{
 			$rs = $db_connection->prepare($sql);
 			if(!$rs->bind_param('siii',$name,$categories,$pinned,$id))
 					return "Bind paramenter error";
-
-<<<<<<< HEAD
+            
 			if(!$rs->execute()){
 					return "Execute Error";
 			}
@@ -526,15 +525,7 @@ class DBHandler{
 			$db_connection->close();
 			return true;
 	}
-=======
-                if(!$rs->execute()){
-                       return "Execute Error";
-                }
-                $rs->close();
-                $db_connection->close();
-                return true;
-        }
-        
+    
         function deleteArchive($from,$to){
                 global $db_connection;
                 $officers = [];
@@ -572,7 +563,6 @@ class DBHandler{
                 return $officers;
                 
         }
->>>>>>> 1d89dad0bf21c410f255384fc88d640ffc794134
 	
 	//UPDATE DOCUMENT STATUS
 	function documentStatusUpdate($user_id,$document_id,$new_status){
