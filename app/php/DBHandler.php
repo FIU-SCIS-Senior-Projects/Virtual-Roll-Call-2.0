@@ -271,13 +271,13 @@ from LOGS inner join DOCUMENTS on LOGS.documentid = DOCUMENTS.document_ID inner 
 	
 	//TODO: UPLOAD DATE COME WITH 1 DAY MORE THAN THE ACTUAL DATE
 	//ADD DOCUMENT METADATA  TO THE DATABASE
-	function addDocument($document, $category, $upload_date, $pinned, $uploaded_by, $upload_name){
+	function addDocument($document, $category, $upload_date, $pinned, $uploaded_by, $upload_name, $upload_description){
 		global $db_connection;
 		$result = ['Added' => false];
-		$sql = "INSERT INTO DOCUMENTS (Document_Name, Category_ID, Upload_Date, Pinned, Uploaded_By, Upload_Name) VALUES (?,?,?,?,?,?)"; 
+		$sql = "INSERT INTO DOCUMENTS (Document_Name, Category_ID, Upload_Date, Pinned, Uploaded_By, Upload_Name, Description) VALUES (?,?,?,?,?,?,?)"; 
 		$stmt = $db_connection->prepare($sql);
 		
-		if (!$stmt->bind_param('sdsdss', $document, $category, $upload_date, $pinned, $uploaded_by, $upload_name))
+		if (!$stmt->bind_param('sdsdsss', $document, $category, $upload_date, $pinned, $uploaded_by, $upload_name, $upload_description))
 		{
 			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
 		}
