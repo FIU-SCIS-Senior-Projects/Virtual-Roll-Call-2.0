@@ -4,7 +4,7 @@ require_once('DBHandler.php');
 $document_name = $_FILES['document']['name'];
 $tmp_doc_name = $_FILES['document']['tmp_name'];
 $new_name = $_POST['document_name'];
-$document_description = $_POST['document_description'];
+$document_description = $_POST['document_description'] == '' ? $new_name : $_POST['document_description'];
 $doc_extension = pathinfo($document_name,PATHINFO_EXTENSION);
 $category_id = $_POST['category_id'];
 $uploaded_by = $_POST['uploaded_by'];

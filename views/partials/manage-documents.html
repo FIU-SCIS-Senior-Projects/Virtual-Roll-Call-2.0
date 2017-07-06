@@ -21,7 +21,7 @@
 					<br>
 					<label>Document Description <span class="glyphicon glyphicon-file"></span></label>
 					<br>
-					<input type="text" name='document_description' required>
+					<textarea rows="4" name='document_description'></textarea>
 					<br>
 					<br>
 					<label>Category <span class="glyphicon glyphicon-list-alt"></span></label>
@@ -66,6 +66,7 @@
 							<th ng-click="sortTable('date')">Upload Date</th>
 							<th ng-click="sortTable('pinned')">Pinned</th>
 							<th ng-click="sortTable('uploadedBy')">Uploaded By</th>
+							<th ng-click="sortTable('archived')">Archived</th>
 							<th class="text-center">Edit</th>
 						</tr>
 					</thead>
@@ -78,6 +79,7 @@
 							<td>{{d.date}}</td>
 							<td>{{d.pinned}}</td>
 							<td>{{d.uploadedBy}}</td>
+							<td>{{d.archived}}</td>
 							<td class='text-center'><button class="btn-default" ng-click="editDocument(d.id,d.name,d.pinned,d.cat_name)"><span class="glyphicon glyphicon-edit"></span> Edit</button></td>
 						</tr>
 					</tbody>

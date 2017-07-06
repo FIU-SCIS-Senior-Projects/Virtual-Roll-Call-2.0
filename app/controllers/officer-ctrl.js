@@ -35,11 +35,11 @@ officerModule.controller('officerCtrl', ['$scope', 'localStorageService', 'dataS
     /***********************
    * GET ACTIVE DOCUMENTS *
    ***********************/
-    $scope.getActiveDocuments = function () {
+    $scope.getActiveDocuments = function (user_id) {
 
       $scope.selected_cat = $routeParams.selectedCategory;
 
-      dataService.viewDocuments()
+      dataService.viewDocuments(user_id)
         .then(
         function (data) {
           var cat = $routeParams.selectedCategory;
@@ -86,11 +86,11 @@ officerModule.controller('officerCtrl', ['$scope', 'localStorageService', 'dataS
    * GET ARCHIVED DOCUMENTS *
    ***********************/
 
-    $scope.getArchivedDocuments = function () {
+    $scope.getArchivedDocuments = function (user_id) {
 
       $scope.selected_cat = $routeParams.selectedCategory;
 
-      dataService.viewArchivedDocuments()
+      dataService.viewArchivedDocuments(user_id)
         .then(
         function (data) {
           var cat = $routeParams.selectedCategory;
@@ -126,7 +126,7 @@ officerModule.controller('officerCtrl', ['$scope', 'localStorageService', 'dataS
         });
 
     };
-
+    
     $scope.document_log = function (user_id, document_id, list_name, status) {
       dataService.documentSaveLog(user_id, document_id);
 

@@ -197,40 +197,74 @@ class DBHandler{
 		return $officers;
 	}
 
+	function GetDocumentStatusByUser($user_id)
+	{
+		$status = 0;
+
+		if($user_id == ''){
+			$status = 'NULL AS Status';
+		}
+		else
+		{
+			$status =
+			'(
+                SELECT DOCUMENT_STATUS.Description AS Status
+                FROM DOCUMENT_STATUS 
+                WHERE DOCUMENT_STATUS.Id = 
+                (
+                    SELECT StatusId 
+                    FROM USER_DOC_STATUS 
+                    WHERE DOCUMENTS.document_ID = USER_DOC_STATUS.DocumentId
+                    AND USER_DOC_STATUS.OfficerId = '.$user_id.'
+                )
+             
+            ) 
+			AS Status';
+		}
+
+		return $status;
+	}
+
 	//GET ALL DOCUMENTS FROM THE DATABASE
-	function getDocuments($archived){
+	function getDocuments($type, $user_id){
 
 		$statusArray = $this->GetStatusArray();
+		$status = $this->GetDocumentStatusByUser($user_id);
 
 		global $db_connection;
 		$documents = [];
 		$sql = 'SELECT 
-			DOCUMENTS.document_ID, 
-			DOCUMENTS.Document_Name, 
-			DOCUMENTS.Category_ID, 
-			DOCUMENTS.Upload_Date, 
-			DOCUMENTS.Pinned, 
-			DOCUMENTS.Uploaded_By, 
-			CATEGORIES.category_name, 
-			DOCUMENTS.Upload_Name, 
-			DOCUMENTS.Description,
-			DOCUMENT_STATUS.Description
-			FROM DOCUMENTS 
-			INNER JOIN CATEGORIES ON DOCUMENTS.Category_ID = CATEGORIES.Category_ID
-			LEFT JOIN USER_DOC_STATUS ON DOCUMENTS.document_ID = USER_DOC_STATUS.DocumentId
-			LEFT JOIN DOCUMENT_STATUS ON USER_DOC_STATUS.StatusId = DOCUMENT_STATUS.Id
-			';
+				DOCUMENTS.document_ID, 
+				DOCUMENTS.Document_Name, 
+				DOCUMENTS.Category_ID, 
+				DOCUMENTS.Upload_Date, 
+				DOCUMENTS.Pinned, 
+				DOCUMENTS.Uploaded_By, 
+				CATEGORIES.category_name, 
+				DOCUMENTS.Upload_Name, 
+				DOCUMENTS.Description,
+					IF(
+					((DOCUMENTS.Upload_Date < (DATE(NOW()) - INTERVAL 7 DAY) AND DOCUMENTS.Pinned = false) OR DOCUMENTS.Manual_Archived = true), 
+					\'Yes\', 
+					\'No\'
+				) AS Archived,
+				'.$status.'
+				FROM DOCUMENTS 
+				INNER JOIN CATEGORIES ON DOCUMENTS.Category_ID = CATEGORIES.Category_ID
+				';
 
-		if($archived == true){
-		 	$sql .= ' WHERE DOCUMENTS.Upload_Date < (DATE(NOW()) - INTERVAL 7 DAY) AND DOCUMENTS.Pinned = false';
+		if ($type == 'archived')
+		{
+		 	$sql .= ' WHERE ((DOCUMENTS.Upload_Date < (DATE(NOW()) - INTERVAL 7 DAY) AND DOCUMENTS.Pinned = false) OR DOCUMENTS.Manual_Archived = true)';
 		}
-		else{
-			$sql .= ' WHERE DOCUMENTS.Upload_Date >= (DATE(NOW()) - INTERVAL 7 DAY) OR DOCUMENTS.Pinned = true';
-		}	
+		else if ($type == 'active')
+		{
+			$sql .= ' WHERE ((DOCUMENTS.Upload_Date >= (DATE(NOW()) - INTERVAL 7 DAY) OR DOCUMENTS.Pinned = true) AND DOCUMENTS.Manual_Archived = false)';
+		}
 
 		$stmt = $db_connection->prepare($sql);
 		$stmt->execute();
-		$stmt->bind_result($id, $name, $catID, $date, $pinned, $uploadedBy, $cat_name, $upload_name, $doc_description, $status);
+		$stmt->bind_result($id, $name, $catID, $date, $pinned, $uploadedBy, $cat_name, $upload_name, $doc_description, $archived, $status);
 		while($stmt->fetch()){
 			$tmp = ["id" => $id,
 			"name" => $name,
@@ -240,6 +274,7 @@ class DBHandler{
 			"uploadedBy" => $uploadedBy,
 			"upload_name" => $upload_name,
 			"doc_description" => $doc_description,
+			"archived" => $archived,
 			"status" => $status == NULL ? $statusArray[1] : $status]
 			;
 			array_push($documents, $tmp);
@@ -250,18 +285,48 @@ class DBHandler{
 	}
 
         function getlogs(){
+
+				$statusArray = $this->GetStatusArray();
+
                 global $db_connection;
                 $logs = [];
-                $sql = 'select First_Name,Last_Name,Document_Name,DOC 
-from LOGS inner join DOCUMENTS on LOGS.documentid = DOCUMENTS.document_ID inner join OFFICERS on LOGS.userid = OFFICERS.userID';
+                $sql = 'SELECT 
+						OFFICERS.First_Name,
+						OFFICERS.Last_Name,
+						DOCUMENTS.Document_Name,
+						LOGS.DOC, 
+						DOCUMENTS.Upload_Date AS Uploaded,
+						USER_DOC_STATUS.StartDateTime AS Started,
+						USER_DOC_STATUS.EndDateTime AS Completed,
+						CONCAT(TRUNCATE((TIMESTAMPDIFF(SECOND, USER_DOC_STATUS.startdatetime, USER_DOC_STATUS.enddatetime)), 2), \' Sec\') AS Duration,
+						USER_DOC_STATUS.StatusId
+						FROM DOCUMENTS 
+						LEFT JOIN LOGS ON LOGS.documentid = DOCUMENTS.document_ID 
+						LEFT JOIN OFFICERS ON LOGS.userid = OFFICERS.userID
+						LEFT JOIN USER_DOC_STATUS ON DOCUMENTS.document_ID = USER_DOC_STATUS.DocumentId AND OFFICERS.userID = USER_DOC_STATUS.OfficerId
+						LEFT JOIN DOCUMENT_STATUS ON USER_DOC_STATUS.StatusId = DOCUMENT_STATUS.Id
+						ORDER BY DOCUMENTS.Upload_Date DESC
+						';
+
                 $stmt = $db_connection->prepare($sql);
                 $stmt->execute();
-                $stmt->bind_result($First_Name, $Last_Name, $Document_Name, $DOC);
+                $stmt->bind_result(
+					$First_Name, $Last_Name, $Document_Name, $DOC,
+					$Uploaded, $Started, $Completed, $Duration, $Status
+					);
                 while($stmt->fetch()){
-                        $tmp = ["First_Name" => $First_Name,
-                        "Last_Name" => $Last_Name,
-                        "Document_Name" => $Document_Name,
-                        "DOC" => $DOC ];
+
+
+                        $tmp = [
+							"Full_Name" => $First_Name.' '.$Last_Name,
+							"Document_Name" => $Document_Name,
+							"DOC" => $DOC,
+							"Uploaded" => $Uploaded,
+							"Started" => $Started,
+							"Completed" => $Completed,
+							"Duration" => $Duration < 0 ? '0.00 Sec' : $Duration,
+							"Status" => $Status == NULL ? $statusArray[1] : $statusArray[(int)$Status]
+						];
                         array_push($logs, $tmp);
                 }
                 $stmt->close();
@@ -446,20 +511,20 @@ from LOGS inner join DOCUMENTS on LOGS.documentid = DOCUMENTS.document_ID inner 
 		
 	}	
 
-        function updateDocument($id,$name,$categories,$pinned){
-                global $db_connection;
-                $sql = "Update DOCUMENTS set Document_Name=?,Category_ID=?,Pinned=? where document_ID =?";
-                $rs = $db_connection->prepare($sql);
-                if(!$rs->bind_param('siii',$name,$categories,$pinned,$id))
-                        return "Bind paramenter error";
+	function updateDocument($id,$name,$categories,$pinned){
+			global $db_connection;
+			$sql = "Update DOCUMENTS set Document_Name=?,Category_ID=?,Pinned=? where document_ID =?";
+			$rs = $db_connection->prepare($sql);
+			if(!$rs->bind_param('siii',$name,$categories,$pinned,$id))
+					return "Bind paramenter error";
 
-                if(!$rs->execute()){
-                       return "Execute Error";
-                }
-                $rs->close();
-                $db_connection->close();
-                return true;
-        }
+			if(!$rs->execute()){
+					return "Execute Error";
+			}
+			$rs->close();
+			$db_connection->close();
+			return true;
+	}
 	
 	//UPDATE DOCUMENT STATUS
 	function documentStatusUpdate($user_id,$document_id,$new_status){
@@ -539,6 +604,9 @@ from LOGS inner join DOCUMENTS on LOGS.documentid = DOCUMENTS.document_ID inner 
 							];
 					}
 					$stmtSelect->close();
+
+					$this->documentSaveLog($user_id,$document_id);
+
 					$db_connection->close();
 					return $result;
 				}
@@ -549,86 +617,5 @@ from LOGS inner join DOCUMENTS on LOGS.documentid = DOCUMENTS.document_ID inner 
 		return $result;
 	}
 
-	// 	function updateDeptName($dept_name) {
-	// 	global $db_connection;
-	// 	$result = ["Updated" => false];
-	// 	$sql = "UPDATE SETTINGS SET Department_Name=?";
-	// 	$stmt = $db_connection->prepare($sql);
-	// 	if( !$stmt->bind_param('s', $dept_name)){
-	// 		return $result;
-	// 	}
-	// 	if (!$stmt->execute()){
-	// 		return $result;
-	// 	}
-	// 	$result["Updated"] = true;
-	// 	$stmt->close();
-	// 	$db_connection->close();
-	// 	return $result;
-	// }
-
-
-	// $stmt = $db_connection->prepare($sql);
-	// 	$stmt->execute();
-	// 	$stmt->bind_result($id, $name, $catID, $date, $pinned, $uploadedBy, $cat_name, $upload_name, $doc_description, $status);
-	// 	while($stmt->fetch()){
-	// 		$tmp = ["id" => $id,
-	// 		"name" => $name,
-	// 		"cat_name" => $cat_name,
-	// 		"date" => $date, 
-	// 		"pinned" => $pinned, 
-	// 		"uploadedBy" => $uploadedBy,
-	// 		"upload_name" => $upload_name,
-	// 		"doc_description" => $doc_description,
-	// 		"status" => $status == NULL ? "Pending" : $status]
-	// 		;
-	// 		array_push($documents, $tmp);
-	// 	}
-	// 	$stmt->close();
-	// 	$db_connection->close();
-	// 	return $documents;
-
 }
-
-// class DBHandlerHelper{
-
-// 	//Must be updated to match production environment
-// 	function __construct(){
-// 		global $db_connection;
-// 		$un = 'root';
-// 		$pw = 'VirtualRollCall';
-// 		$dbName = 'VIRTUAL_ROLL_CALL';
-// 		$address = 'localhost';
-// 		$db_connection = new mysqli($address, $un, $pw, $dbName);
-
-// 		if ($db_connection->connect_errno > 0) {
-// 			die('Unable to connect to database[' . $db_connection->connect_error . ']');
-// 		}
-
-// 	}
-
-// 	function GetStatusDescription($statusId){
-// 		global $db_connection;
-// 		$result = [];
-// 		$statusDescription = 'Not Defined';
-		
-// 		$sql = 'SELECT Description FROM DOCUMENT_STATUS WHERE Id=?';
-// 		$stmt = $db_connection->prepare($sql);
-// 		$stmt->bind_param('d',$statusId);
-		
-// 		if ($stmt->execute()){
-// 			$stmt->bind_result($statusDescription);
-// 			while($stmt->fetch()){
-// 				$result = [
-// 					"description" => $statusDescription
-// 					];
-// 			}
-// 			$statusDescription = $result[0].description;
-// 			$stmt->close();
-// 			$db_connection->close();
-			
-// 		}
-
-// 		return $statusDescription;
-// 	}
-// }
 

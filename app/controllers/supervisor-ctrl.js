@@ -144,10 +144,14 @@ supervisorModule.controller('supervisorCtrl', ['$scope', 'localStorageService', 
   $scope.gridOptions = {
     enableFiltering: true,
     columnDefs: [
-      { field: 'First_Name' },
-      { field: 'Last_Name'},
-      { field: 'Document_Name' },
-      { field: 'DOC' }
+      { field: 'Full_Name', displayName: 'Officer Name'},
+      { field: 'Document_Name'},
+      { field: 'DOC', displayName: 'Log Date'},
+      { field: 'Uploaded', displayName: 'Uploaded Date'},
+      { field: 'Started', displayName: 'Started'},
+      { field: 'Completed', displayName: 'Completed'},
+      { field: 'Duration', displayName: 'Duration'},
+      { field: 'Status', displayName: 'Status'}
     ],
     enableGridMenu: true,
     enableSelectAll: true,

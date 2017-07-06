@@ -15,7 +15,7 @@ sharedModule.factory('sharedService', function ($http, $q) {
     },
     getDocuments: function () {
       return $q(function (resolve, reject) {
-        $http.post('../app/php/get-documents.php', {})
+        $http.post('../app/php/get-documents.php', {'type': 'all', 'user_id': 0})
           .then(
           function (response) {
             resolve(response.data);
@@ -253,9 +253,9 @@ supervisorModule.factory('dataService', function ($http, $q) {
 //SERVICE for officer controller
 officerModule.factory('dataService', function ($http, $q) {
   return {
-    viewDocuments: function () {
+    viewDocuments: function (user_id) {
       return $q(function (resolve, reject) {
-        $http.post('../app/php/get-documents.php', {'archived': false})
+        $http.post('../app/php/get-documents.php', {'type': 'active', 'user_id': user_id})
           .then(
           function (response) {
             resolve(response.data);
@@ -266,9 +266,9 @@ officerModule.factory('dataService', function ($http, $q) {
       });
     },
 
-    viewArchivedDocuments: function () {
+    viewArchivedDocuments: function (user_id) {
       return $q(function (resolve, reject) {
-        $http.post('../app/php/get-documents.php', {'archived': true})
+        $http.post('../app/php/get-documents.php', {'type': 'archived', 'user_id': user_id})
           .then(
           function (response) {
             resolve(response.data);
