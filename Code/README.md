@@ -1,7 +1,7 @@
 Code Directory Structure
 
 - Database
- - DB_Commands.sql: contains SQL code to create Database, tables, and insert data into the mysql database for VRC ver.2.0
+ - VIRTUAL_ROLL_CALL.sql: contains SQL code to create Database, tables, and insert data into the mysql database for VRC ver.2.0
  * Make sure to edit the connection details in the DBHandler.php file after to setting up the database
 
 - Website
